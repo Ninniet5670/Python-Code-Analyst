@@ -2,19 +2,20 @@ import os
 
 
 arq = open('lista_erros.txt', 'a')
-def recursive_dir():
+def recursive_dir(code):
     for file in os.listdir(os.curdir):
         if os.path.isdir(file):
             os.chdir(file)
-            recursive_dir()
+            recursive_dir(code)
             print(file)
         else:
             if file.split('.')[-1] == 'py':
                 os.system(
-                    f'pycodestyle --first {file} >> oi.txt')
+                    f'{code} {file} >> aux.txt')
                 
-                with open('oi.txt', 'r') as arqq:
+                with open('aux.txt', 'r') as arqq:
                     arq.write(arqq.read())
+                os.remove('aux.txt')
     os.chdir('..')
 
 
@@ -27,11 +28,11 @@ Escolha uma opção:
 Digite: ''')
 
 if choice == '1':
-    pass
+    recursive_dir('pycodestyle --first')
 elif choice == '2':
-    pass
+    recursive_dir('pylint')
 elif choice == '3':
-    recursive_dir()
+    recursive_dir('autopep8 --in-place --aggressive --aggressive')
 elif choice == '0':
     exit()
 
