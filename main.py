@@ -1,6 +1,7 @@
 import os
 
 
+arq = open('lista_erros.txt', 'a')
 def recursive_dir():
     for file in os.listdir(os.curdir):
         if os.path.isdir(file):
@@ -10,7 +11,10 @@ def recursive_dir():
         else:
             if file.split('.')[-1] == 'py':
                 os.system(
-                    f'autopep8 --in-place --aggressive --aggressive {file}')
+                    f'pycodestyle --first {file} >> oi.txt')
+                
+                with open('oi.txt', 'r') as arqq:
+                    arq.write(arqq.read())
     os.chdir('..')
 
 
@@ -27,6 +31,8 @@ if choice == '1':
 elif choice == '2':
     pass
 elif choice == '3':
-    run_autopep()
+    recursive_dir()
 elif choice == '0':
     exit()
+
+arq.close()
