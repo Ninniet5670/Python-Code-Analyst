@@ -2,6 +2,8 @@ import os
 
 
 arq = open('lista_erros.txt', 'a')
+
+
 def recursive_dir(code):
     for file in os.listdir(os.curdir):
         if os.path.isdir(file):
@@ -11,11 +13,11 @@ def recursive_dir(code):
         else:
             if file.split('.')[-1] == 'py':
                 os.system(
-                    f'{code} {file} >> aux.txt')
-                
-                with open('aux.txt', 'r') as arqq:
+                    f'{code} {file} >> oi.txt')
+
+                with open('oi.txt', 'r') as arqq:
                     arq.write(arqq.read())
-                os.remove('aux.txt')
+                os.remove('oi.txt')
     os.chdir('..')
 
 
