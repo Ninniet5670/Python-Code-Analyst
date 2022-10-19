@@ -1,0 +1,20 @@
+main1.py:3:1: E302 expected 2 blank lines, found 1
+main1.py:10:1: E305 expected 2 blank lines after class or function definition, found 1
+main1.py:10:8: W292 no newline at end of file
+main2.py:3:1: E302 expected 2 blank lines, found 1
+main2.py:7:9: W292 no newline at end of file
+main3.py:4:1: E302 expected 2 blank lines, found 1
+main3.py:5:9: W292 no newline at end of file
+nome.py:3:16: W292 no newline at end of file
+teste.py:19:5: E722 do not use bare 'except'
+teste.py:21:1: W293 blank line contains whitespace
+main1.py:3:1: E302 expected 2 blank lines, found 1
+main1.py:10:1: E305 expected 2 blank lines after class or function definition, found 1
+main1.py:10:8: W292 no newline at end of file
+main2.py:3:1: E302 expected 2 blank lines, found 1
+main2.py:7:9: W292 no newline at end of file
+main3.py:4:1: E302 expected 2 blank lines, found 1
+main3.py:5:9: W292 no newline at end of file
+nome.py:3:16: W292 no newline at end of file
+teste.py:16:5: E722 do not use bare 'except'
+teste.py:18:1: W293 blank line contains whitespace

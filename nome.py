@@ -1,6 +1,3 @@
-def oi():
-    pass
+lista = ['oi']
 
-
-def oi2():
-    pass
+print(lista[0])
