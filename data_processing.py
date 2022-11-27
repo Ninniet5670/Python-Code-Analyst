@@ -1,38 +1,47 @@
-from collections import Counter
+import pandas as pd
+
+class PycodeSniffer:
+    def __init__(self, file):
+        self.file = file
+
+    def errors_types(self):
+        error_type = []
+
+        with open(self.file, 'r+') as arq:
+            arqq = arq.readlines()
+
+        for i in arqq:
+            try:
+                x, _ = i.split('::')[0][0], i.split('::')[1]
+                error_type.append(x)
+            except:
+                continue
+
+        return pd.Series(error_type).value_counts()
+
+    def insigth_pylint(self):
+        error_code = []
+
+        with open(self.file, 'r+') as _:
+            arq = _.readlines()
+
+        for i in arq:
+            try:
+                x, _ = i.split('::')[0], i.split('::')[1]
+                error_code.append(x)
+            except:
+                continue
+
+        return pd.Series(error_code).value_counts()
+
+    def pylint_score(self):
+        with open(self.file, 'r+') as _:
+            arq = _.readlines()
+            while '\n' in arq: arq.remove('\n')
+
+        return arq[-1].split('/')[0].split()[-1]
 
 
-def pep8_data_process():
-    erros = []
-
-    with open('pep8_errors.txt', 'r+') as arq:
-        arqq = arq.read()
-
-    arqq = arqq.split('\n')
-    arqq.pop()
-    for i, erro in enumerate(arqq):
-        arqq[i] = str(erro.split(': ')[1:][0]).split(',')
-
-    for erro in arqq:
-        try:
-            x, y = erro[0].split()[0], int(erro[1].split()[-1])
-        except:
-            x, y = erro[0].split()[0], 1
-        
-        for i in range(y):
-            erros.append(x)
-
-    return dict(Counter(erros))
-
-
-def pylint_data_process():
-    with open('pylint_errors.txt', 'r+') as arq:
-        arqq = arq.read()
-
-    arqq = arqq.split('\n')
-    for i, erro in enumerate(arqq):
-        if '*' in arqq[i] or arqq[i] == '':
-            arqq.pop(i)
-
-    print(arqq)
-
-pylint_data_process()
+print(PycodeSniffer('pylint_errors.txt').insigth_pylint())
+print(PycodeSniffer('pylint_errors.txt').pylint_score())
+print(PycodeSniffer('pylint_errors.txt').errors_types())
