@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class PycodeSniffer:
     def __init__(self, file):
         self.file = file
@@ -14,7 +15,7 @@ class PycodeSniffer:
             try:
                 x, _ = i.split('::')[0][0], i.split('::')[1]
                 error_type.append(x)
-            except:
+            except BaseException:
                 continue
 
         return pd.Series(error_type).value_counts()
@@ -29,7 +30,7 @@ class PycodeSniffer:
             try:
                 x, _ = i.split('::')[0], i.split('::')[1]
                 error_code.append(x)
-            except:
+            except BaseException:
                 continue
 
         return pd.Series(error_code).value_counts()
@@ -37,7 +38,8 @@ class PycodeSniffer:
     def pylint_score(self):
         with open(self.file, 'r+') as _:
             arq = _.readlines()
-            while '\n' in arq: arq.remove('\n')
+            while '\n' in arq:
+                arq.remove('\n')
 
         return arq[-1].split('/')[0].split()[-1]
 
