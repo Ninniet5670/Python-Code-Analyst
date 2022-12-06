@@ -16,10 +16,10 @@ class PySmells:
             try:
                 if count_by_type:
                     x, _ = i.split('::')[0][0], i.split('::')[1]
-                    error_code.append(x)
                 else:
                     x, _ = i.split('::')[0], i.split('::')[1]
-                    error_code.append(x)
+                    
+                error_code.append(x)
             except BaseException:
                 continue
 
