@@ -1,3 +1,4 @@
+from data_processing import PySmells
 import os
 
 
@@ -8,5 +9,9 @@ import os
 #         os.system(f"pycodestyle --statistics -qq {file} >> {file}_pep8_errors.txt")
 
 
-os.system(f"pylint --msg-template='{{msg_id}}::{{msg}}' treste >> pylint_errors.txt")
-# os.system(f"pycodestyle --statistics -qq treste >> pep8_errors.txt")
+os.system(f"pylint --msg-template='{{msg_id}}::{{msg}}' teste >> pylint_errors.txt")
+# os.system(f"pycodestyle --statistics -qq teste >> pep8_errors.txt")
+
+print(PySmells('pylint_errors.txt').insigth_pylint())
+print(PySmells('pylint_errors.txt').pylint_score())
+print(PySmells('pylint_errors.txt').errors_types())

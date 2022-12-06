@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-class PycodeSniffer:
+class PySmells:
     def __init__(self, file):
         self.file = file
 
@@ -42,8 +42,3 @@ class PycodeSniffer:
                 arq.remove('\n')
 
         return arq[-1].split('/')[0].split()[-1]
-
-
-print(PycodeSniffer('pylint_errors.txt').insigth_pylint())
-print(PycodeSniffer('pylint_errors.txt').pylint_score())
-print(PycodeSniffer('pylint_errors.txt').errors_types())
