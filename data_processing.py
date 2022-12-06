@@ -5,22 +5,8 @@ class PySmells:
     def __init__(self, file):
         self.file = file
 
-    def errors_types(self):
-        error_type = []
-
-        with open(self.file, 'r+') as arq:
-            arqq = arq.readlines()
-
-        for i in arqq:
-            try:
-                x, _ = i.split('::')[0][0], i.split('::')[1]
-                error_type.append(x)
-            except BaseException:
-                continue
-
-        return pd.Series(error_type).value_counts()
-
-    def insigth_pylint(self):
+    def insigth_pylint(self, count_by_type=False):
+        ''''''
         error_code = []
 
         with open(self.file, 'r+') as _:
@@ -28,8 +14,12 @@ class PySmells:
 
         for i in arq:
             try:
-                x, _ = i.split('::')[0], i.split('::')[1]
-                error_code.append(x)
+                if count_by_type:
+                    x, _ = i.split('::')[0][0], i.split('::')[1]
+                    error_code.append(x)
+                else:
+                    x, _ = i.split('::')[0], i.split('::')[1]
+                    error_code.append(x)
             except BaseException:
                 continue
 
