@@ -32,3 +32,15 @@ class PySmells:
                 arq.remove('\n')
 
         return arq[-1].split('/')[0].split()[-1]
+
+    def pep8_insigth(self):
+        error_codes = []
+
+        with open(self.file, 'r+') as _:
+            arq = _.readlines()
+
+        for error in arq:
+            count, error_code = error.split()[0], error.split()[1]
+            error_codes.append([error_code, count])
+
+        return pd.Series([i[1] for i in error_codes], index=[i[0] for i in error_codes])
