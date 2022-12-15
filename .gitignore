@@ -4,3 +4,4 @@ venv
 teste
 pep8_errors.txt
 pylint_errors.txt
+mypy_errors.txt
