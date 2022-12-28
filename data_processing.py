@@ -5,7 +5,7 @@ class PySmells:
     def __init__(self, file):
         self.file = file
 
-    def insigth_pylint(self, count_by_type=False):
+    def pylint_insigth(self, count_by_type=False):
         ''''''
         error_code = []
 
@@ -44,3 +44,16 @@ class PySmells:
             error_codes.append([error_code, count])
 
         return pd.Series([i[1] for i in error_codes], index=[i[0] for i in error_codes])
+
+    def mypy_insigth(self):
+        errors = []
+
+        with open(self.file, 'r+') as _:
+            arq = _.readlines()
+
+        for error in arq:
+            a = error.split('  ')[-1]
+            errors.append(a[:-1])
+
+        errors.pop()
+        return pd.Series(errors).value_counts()
