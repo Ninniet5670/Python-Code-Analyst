@@ -1,9 +1,0 @@
-.idea
-__pycache__
-venv
-teste
-pep8_errors.txt
-pylint_errors.txt
-mypy_errors.txt
-dist
-pysmells.egg-info
