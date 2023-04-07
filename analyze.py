@@ -86,7 +86,7 @@ def analyze_file(directory, file_path, table_data):
     return total_alerts
 
 def main():
-    directory = "teste"
+    directory = "test"
     os.chdir(directory)  # Muda o diretório para 'teste'
 
     table_data = []
