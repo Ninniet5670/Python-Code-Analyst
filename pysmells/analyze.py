@@ -63,12 +63,6 @@ def analyze_file(directory, file_path, table_data):
     table_row.append(mypy_output if type_annotations_present else "None")  # Adds the "Type Annotations Description" field
     table_data.append(table_row)
 
-    print(f"\nFile '{file_path}' {'adopts' if type_annotations_present else 'does not adopt'} Type Annotations.\n")
-    print("========================================\n")
-
-    print("\nMypy analysis result:")
-    print(mypy_output)
-
     return total_alerts
 
 
