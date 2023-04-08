@@ -1,35 +1,26 @@
 import os
 import re
 import subprocess
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from tabulate import tabulate
-import csv
-import ast
 
 
 def check_type_annotations(file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
-        source = f.read()
+    with open(file_path, "r") as file:
+        content = file.read()
 
-    tree = ast.parse(source)
-
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if node.returns is not None:
-                return True
-            for arg in node.args.args:
-                if arg.annotation is not None:
-                    return True
-    return False
+    type_annotation_pattern = re.compile(r'(?<=:)\s*([a-zA-Z_][a-zA-Z0-9_]*|\s*List\s*\[[a-zA-Z0-9_, ]+\])\s*')
+    match = type_annotation_pattern.search(content)
+    return bool(match)
 
 
 def analyze_file(directory, file_path, table_data):
-    print(f"Analisando o arquivo: {file_path}\n")
+    print(f"Analyzing the file: {file_path}\n")
 
-    # Verificar Type Annotations
+    # Check Type Annotations
     type_annotations_present = check_type_annotations(file_path)
 
-    # Executar Pylint
+    # Run Pylint
     process = subprocess.run(["pylint", file_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              universal_newlines=True, check=False)
     pylint_output = process.stdout
@@ -56,60 +47,50 @@ def analyze_file(directory, file_path, table_data):
             alert_details[alert_type].append(alert_code)
 
     total_alerts = sum(alert_count.values())
-    # Atualizar a estrutura de dados da tabela
+    # Update the table data structure
     table_row = [directory, file_path, total_alerts]
     for alert_type in alert_type_names.keys():
         table_row.append(alert_count[alert_type])
 
     table_row.append(", ".join(sorted(set(alert_code for alert_codes in alert_details.values() for alert_code in alert_codes))))
-    table_row.append("Sim" if type_annotations_present else "Não")  # Adiciona o campo "Adota Type Annotations?"
+    table_row.append("Yes" if type_annotations_present else "No")  # Adds the "Adopt Type Annotations?" field
 
-    # Executar Mypy
+    # Run Mypy
     mypy_process = subprocess.run(["mypy", file_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                   universal_newlines=True, check=False)
     mypy_output = mypy_process.stdout
 
-    # Adiciona o campo "Descrição de Type Annotations"
-    if type_annotations_present:
-        table_row.append(mypy_output.strip())
-    else:
-        table_row.append("Nenhum")
-
+    table_row.append(mypy_output if type_annotations_present else "None")  # Adds the "Type Annotations Description" field
     table_data.append(table_row)
 
-    print(f"\nO arquivo '{file_path}' {'adota' if type_annotations_present else 'não adota'} Type Annotations.\n")
+    print(f"\nFile '{file_path}' {'adopts' if type_annotations_present else 'does not adopt'} Type Annotations.\n")
     print("========================================\n")
 
-    print("\nResultado da análise Mypy:")
+    print("\nMypy analysis result:")
     print(mypy_output)
 
     return total_alerts
 
+
 def main():
-    directory = "test"
-    os.chdir(directory)  # Muda o diretório para 'teste'
+    root_directory = input("Enter the directory path containing the Python files to analyze: ")
 
     table_data = []
     total_alerts_directory = 0
 
-    for file_name in os.listdir():
-        if file_name.endswith(".py"):
-            total_alerts_directory += analyze_file(directory, file_name, table_data)
+    for root, dirs, files in os.walk(root_directory):
+        for file_name in files:
+            if file_name.endswith(".py"):
+                file_path = os.path.join(root, file_name)
+                total_alerts_directory += analyze_file(root, file_path, table_data)
 
-    # Adiciona uma linha no final com o total de alertas
-    table_data.append(['Total de alertas por diretório', '', total_alerts_directory, '', '', '', '', '', '', '', ''])
-
-    print("Tabela de alertas Pylint:")
-    print(tabulate(table_data,
-                   headers=["Diretório Analisado", "Arquivo", "Quantidade Total de alertas",
-                            "Quantidade de alertas Convention", "Quantidade de alertas Refactor",
-                            "Quantidade de alertas Warning", "Quantidade de alertas Error",
-                            "Quantidade de alertas Fatal", "Descrição de alertas", "Adota Type Annotations?",
-                            "Descrição de Type Annotations"],
-                   tablefmt="grid",
-                   colalign=("left", "left", "left", "left", "left", "left", "left", "left", "left", "left", "left")))
-
+    print(f"\nTotal alerts found in the directory: {total_alerts_directory}\n")
+    print(tabulate(table_data, headers=["Directory", "File",
+                                        "Total Alerts", "Convention", "Refactor",
+                                        "Warning", "Error", "Fatal", "Alert Codes",
+                                        "Adopt Type Annotations?",
+                                        "Type Annotations Description"],
+                   tablefmt="grid"))
 
 if __name__ == "__main__":
     main()
-
