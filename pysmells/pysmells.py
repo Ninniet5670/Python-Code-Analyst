@@ -1,6 +1,8 @@
 import os
 import re
+import argparse
 import subprocess
+import csv
 from collections import Counter, defaultdict
 from tabulate import tabulate
 
@@ -48,7 +50,7 @@ def analyze_file(directory, file_path, table_data):
 
     total_alerts = sum(alert_count.values())
     # Update the table data structure
-    table_row = [directory, file_path, total_alerts]
+    table_row = [file_path, total_alerts]
     for alert_type in alert_type_names.keys():
         table_row.append(alert_count[alert_type])
 
@@ -60,14 +62,27 @@ def analyze_file(directory, file_path, table_data):
                                   universal_newlines=True, check=False)
     mypy_output = mypy_process.stdout
 
-    table_row.append(mypy_output if type_annotations_present else "None")  # Adds the "Type Annotations Description" field
+    mypy_output_no_newline = mypy_output.replace('\n', ' | ')
+    table_row.append(mypy_output_no_newline if type_annotations_present else "None")  # Adds the "Type Annotations Description" field
     table_data.append(table_row)
 
     return total_alerts
 
+def export_to_csv(table_data, headers, csv_output):
+    with open(csv_output, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(headers)
+        for row in table_data:
+            csv_writer.writerow(row)
 
 def main():
-    root_directory = input("Enter the directory path containing the Python files to analyze: ")
+    parser = argparse.ArgumentParser(description="Analyze Python files in the specified directory.")
+    parser.add_argument("directory", help="The directory path containing the Python files to analyze.")
+    parser.add_argument("-o", "--output", help="The path and file name for the CSV output.", type=str)
+
+    args = parser.parse_args()
+    root_directory = args.directory
+    csv_output = args.output
 
     table_data = []
     total_alerts_directory = 0
@@ -79,12 +94,16 @@ def main():
                 total_alerts_directory += analyze_file(root, file_path, table_data)
 
     print(f"\nTotal alerts found in the directory: {total_alerts_directory}\n")
-    print(tabulate(table_data, headers=["Directory", "File",
-                                        "Total Alerts", "Convention", "Refactor",
-                                        "Warning", "Error", "Fatal", "Alert Codes",
-                                        "Adopt Type Annotations?",
-                                        "Type Annotations Description"],
-                   tablefmt="grid"))
+    headers = ["File", "Total Alerts", "Convention", "Refactor", "Warning", "Error", "Fatal", "Alert Codes",
+               "Adopt Type Annotations?", "Type Annotations Description"]
+    print(tabulate(table_data, headers=headers, tablefmt="grid"))
+
+    if csv_output:
+        export_to_csv(table_data, headers, csv_output)
+        print(f"CSV file exported to: {csv_output}")
 
 if __name__ == "__main__":
     main()
+
+
+
