@@ -2,7 +2,7 @@ LICENSE
 README.md
 setup.py
 pysmells/__init__.py
-pysmells/analyze.py
+pysmells/pysmells.py
 pysmells.egg-info/PKG-INFO
 pysmells.egg-info/SOURCES.txt
 pysmells.egg-info/dependency_links.txt
