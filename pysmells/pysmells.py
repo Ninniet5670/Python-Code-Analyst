@@ -7,16 +7,7 @@ from collections import Counter, defaultdict
 from tabulate import tabulate
 
 
-def check_type_annotations(file_path):
-    with open(file_path, "r") as file:
-        content = file.read()
-
-    type_annotation_pattern = re.compile(r'(?<=:)\s*([a-zA-Z_][a-zA-Z0-9_]*|\s*List\s*\[[a-zA-Z0-9_, ]+\])\s*')
-    match = type_annotation_pattern.search(content)
-    return bool(match)
-
-
-def analyze_file(directory, file_path, table_data):
+def analyze_file(directory, file_path):
     print(f"Analyzing the file: {file_path}\n")
 
     # Run Pylint
@@ -45,16 +36,7 @@ def analyze_file(directory, file_path, table_data):
             alert_count[alert_type] += 1
             alert_details[alert_type].append(alert_code)
 
-    total_alerts = sum(alert_count.values())
-    # Update the table data structure
-    table_row = [file_path, total_alerts]
-    for alert_type in alert_type_names.keys():
-        table_row.append(alert_count[alert_type])
-
-    table_row.append(", ".join(sorted(set(alert_code for alert_codes in alert_details.values() for alert_code in alert_codes))))
-    table_data.append(table_row)
-
-    return total_alerts
+    return alert_count, alert_details
 
 def export_to_csv(table_data, headers, csv_output):
     with open(csv_output, 'w', newline='') as csvfile:
@@ -77,22 +59,42 @@ def main():
     print(f"Project directory (absolute path): {project_directory}")
 
     table_data = []
-    total_alerts_directory = 0
 
     for subdir in subdirectories:
         current_directory = os.path.abspath(os.path.join(project_directory, subdir))
         print(f"Analyzing subdirectory (absolute path): {current_directory}")
+
+        subdir_alert_count = Counter()
+        subdir_alert_details = defaultdict(list)
+
         if os.path.isdir(current_directory):
             for root, dirs, files in os.walk(current_directory):
                 for file_name in files:
                     if file_name.endswith(".py"):
                         file_path = os.path.join(root, file_name)
-                        total_alerts_directory += analyze_file(root, file_path, table_data)
+                        file_alert_count, file_alert_details = analyze_file(root, file_path)
+
+                        subdir_alert_count.update(file_alert_count)
+                        for alert_type, alert_codes in file_alert_details.items():
+                            subdir_alert_details[alert_type].extend(alert_codes)
+
+                        file_row = [file_path, sum(file_alert_count.values())]
+                        for alert_type in 'CRWEF':
+                            file_row.append(file_alert_count[alert_type])
+
+                        file_row.append(", ".join(sorted(set(alert_code for alert_codes in file_alert_details.values() for alert_code in alert_codes))))
+                        table_data.append(file_row)
+
+            subdir_row = [current_directory, sum(subdir_alert_count.values())]
+            for alert_type in 'CRWEF':
+                subdir_row.append(subdir_alert_count[alert_type])
+
+            subdir_row.append(", ".join(sorted(set(alert_code for alert_codes in subdir_alert_details.values() for alert_code in alert_codes))))
+            table_data.append(subdir_row)
         else:
             print(f"Subdirectory not found: {current_directory}")
 
-    print(f"\nTotal alerts found in the directories: {total_alerts_directory}\n")
-    headers = ["File", "Total Alerts", "Convention", "Refactor", "Warning", "Error", "Fatal", "Alert Codes"]
+    headers = ["Path", "Total Alerts", "Convention", "Refactor", "Warning", "Error", "Fatal", "Alert Codes"]
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
     if csv_output:
@@ -101,3 +103,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
