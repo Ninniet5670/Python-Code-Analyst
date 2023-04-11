@@ -1,0 +1,27 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Python Code Analysis</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Python Code Analysis</h1>
+        {% for subdir, table_data in subdir_data %}
+        <h2>Subdirectory: {{ subdir }}</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Total</th>
+                    <th>Convention</th>
+                    <th>Refactor</th>
+                    <th>Warning</th>
+                    <th>Error</th>
+                    <th>Fatal</th>
+                    <th>Alert Codes</th>
+                </tr>
+            </thead>
