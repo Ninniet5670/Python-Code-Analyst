@@ -1,5 +1,0 @@
-Software Directory,File Path,Total Alerts,Convention,Refactor,Warning,Error,Fatal,Alert Codes
-/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa1,/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa1/badcode1.py,7,5,0,2,0,0,"C0103, C0114, C0116, C0304, C0413, W0611, W0611"
-/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa1,/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa1/__init__.py,0,0,0,0,0,0,
-/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa2,/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa2/__init__.py,0,0,0,0,0,0,
-/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa2,/Users/marcossousa/PycharmProjects/novo_pysmells/test/programa2/badcode2.py,4,4,0,0,0,0,"C0103, C0114, C0116, C0304"

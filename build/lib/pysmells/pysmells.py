@@ -1,16 +1,14 @@
-
 import os
 import re
 import argparse
 import subprocess
 import csv
 from collections import Counter, defaultdict
-from tabulate import tabulate
+
 
 def analyze_file(directory, file_path):
     print(f"Analyzing the file: {file_path}\n")
 
-    # Run Pylint
     process = subprocess.run(["pylint", file_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              universal_newlines=True, check=False)
     pylint_output = process.stdout
@@ -19,14 +17,6 @@ def analyze_file(directory, file_path):
     alert_details = defaultdict(list)
 
     alert_pattern = re.compile(r'([CRWEF]\d{4})')
-
-    alert_type_names = {
-        'C': 'Convention',
-        'R': 'Refactor',
-        'W': 'Warning',
-        'E': 'Error',
-        'F': 'Fatal'
-    }
 
     for line in pylint_output.split("\n"):
         match = alert_pattern.search(line)
@@ -38,26 +28,8 @@ def analyze_file(directory, file_path):
 
     return alert_count, alert_details
 
+
 def export_to_csv(table_data, headers, csv_output):
-    with open(csv_output, 'w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(headers)
-        for row in table_data:
-            csv_writer.writerow(row)
-
-def generate_html(table_data, headers, html_output):
-    html_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software Analysis</title>
-</head>
-<body>
-    <h1>Software Analysis</h1>
-"""
-
     software_data = {}
     for subdir_data in table_data:
         software_directory, file_path, total_alerts, convention, refactor, warning, error, fatal, alert_codes_str = subdir_data
@@ -78,31 +50,29 @@ def generate_html(table_data, headers, html_output):
         software_data[software_name]['alert_counts']['Fatal'] += fatal
         software_data[software_name]['alert_codes'].update(alert_codes)
 
-    for software_name, data in software_data.items():
-        html_content += f"<h2>{software_name}</h2>"
-        html_content += "<table border='1'>"
-        html_content += "<tr>"
-        for header in headers[2:-1]:  # Remove o campo "Alert Codes"
-            html_content += f"<th>{header}</th>"
-        html_content += "</tr>"
-        html_content += "<tr>"
-        for header in headers[2:-1]:  # Remove o campo "Alert Codes"
-            html_content += f"<td>{data['alert_counts'][header]}</td>"
-        html_content += "</tr>"
-        html_content += "</table>"
+    with open(csv_output, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(headers)
+        for row in table_data:
+            csv_writer.writerow(row)
 
-        top_10_alert_codes = sorted(data['alert_codes'], key=lambda x: int(x[1:]))[:10]
-        html_content += f"<h3>Top 10 Alert Codes by {software_name}</h3>"
-        html_content += "<ul>"
-        for alert_code in top_10_alert_codes:
-            html_content += f"<li>{alert_code}</li>"
-        html_content += "</ul>"
+        csv_writer.writerow(["Software Analysis"])
+        for software_name, data in software_data.items():
+            csv_writer.writerow([software_name])
+            row = [data['alert_counts'][header] for header in headers[2:-1]]
+            csv_writer.writerow(["Total Alerts", "Convention", "Refactor", "Warning", "Error", "Fatal"])
+            csv_writer.writerow(row)
+            csv_writer.writerow([])  # Add a blank line
+            top_10_alert_codes = sorted(data['alert_codes'], key=lambda x: int(x[1:]))[:10]
+            top_10_line = f"Top 10 Alert Codes by {software_name}: " + ", ".join(top_10_alert_codes)
+            csv_writer.writerow([top_10_line])
+            csv_writer.writerow([])  # Add a blank line
 
-    html_content += "</body></html>"
-
-    with open(html_output, 'w') as html_file:
-        html_file.write(html_content)
-
+        # Find the 10 common alert codes among the software directories
+        common_alert_codes = set.intersection(*(data['alert_codes'] for data in software_data.values()))
+        top_10_common_alert_codes = sorted(common_alert_codes, key=lambda x: int(x[1:]))[:10]
+        common_alert_codes_line = f"The 10 common alert codes between {', '.join(software_data.keys())}: " + ", ".join(top_10_common_alert_codes)
+        csv_writer.writerow([common_alert_codes_line])
 
 
 def main():
@@ -110,7 +80,6 @@ def main():
     parser.add_argument("-p", "--project", required=True, help="The project directory containing the subdirectories with Python files to analyze.")
     parser.add_argument("-s", "--subdirs", nargs='+', required=True, help="The list of subdirectories in the project directory, each representing a software.")
     parser.add_argument("-csv", "--csv_output", help="The path and file name for the CSV output.")
-    parser.add_argument("-html", "--html_output", help="The path and file name for the HTML output.")
     args = parser.parse_args()
 
     project_directory = os.path.abspath(args.project)
@@ -131,7 +100,6 @@ def main():
                     file_path = os.path.join(root, file)
                     alert_count, alert_details = analyze_file(software_directory, file_path)
 
-                    # Aggregate alert codes
                     alert_codes = []
                     for alert_type, codes in alert_details.items():
                         alert_codes.extend(codes)
@@ -143,9 +111,6 @@ def main():
         csv_output = os.path.abspath(args.csv_output)
         export_to_csv(table_data, headers, csv_output)
 
-    if args.html_output:
-        html_output = os.path.abspath(args.html_output)
-        generate_html(table_data, headers, html_output)
 
 if __name__ == "__main__":
     main()
