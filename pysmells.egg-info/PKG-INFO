@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pysmells
-Version: 1.0.10
+Version: 1.0.11
 Summary: Pysmells is a tool that identifies when something doesn't 'smell right' in a python code, checking for programming errors, inconsistencies and programming style violations. It will then generate a report detailing the results of the analysis. Pysmells is based on the following Python Enhancement Proposals (PEPs): PEP 8, PEP 257 and PEP 20.
 Home-page: https://github.com/pysmells/pysmells
 Author: Marcos Paulo Alves de Sousa and Marco Aurélio Proença Neto
@@ -36,6 +36,13 @@ bash `git clone https://github.com/pysmells/pysmells.git`
 
 To use pysmells, navigate to the directory containing the Python files you want to analyze and run the following command:
 
+Arguments:
+
+-p or --project: The project directory containing the subdirectories with Python files to analyze.
+-s or --subdirs: The list of subdirectories in the project directory, each representing a software.
+-csv or --csv_output: The path and file name for the CSV output report.
+
+`python pysmells.py -p /.../test  -s  Program1 Program2 -csv /.../report.csv`
 
 ## Dependencies
 

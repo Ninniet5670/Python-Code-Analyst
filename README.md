@@ -16,6 +16,13 @@ bash `git clone https://github.com/pysmells/pysmells.git`
 
 To use pysmells, navigate to the directory containing the Python files you want to analyze and run the following command:
 
+Arguments:
+
+-p or --project: The project directory containing the subdirectories with Python files to analyze.
+-s or --subdirs: The list of subdirectories in the project directory, each representing a software.
+-csv or --csv_output: The path and file name for the CSV output report.
+
+`python pysmells.py -p /.../test  -s  Program1 Program2 -csv /.../report.csv`
 
 ## Dependencies
 
