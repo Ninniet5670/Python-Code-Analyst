@@ -30,7 +30,6 @@ Arguments:
 
 pysmells requires the following packages:
 
-- tabulate
 - pylint
 
 These dependencies will be automatically installed when you install pysmells using pip.
